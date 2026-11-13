@@ -265,10 +265,11 @@ function analyze(raw,filename){
     const n=money(value.match(/\$\s*([\d,]+(?:\.\d+)?)/)?.[1]);
     add('Vehicle Coverage',v.name+' '+name+' deductible','$1,000',value,n==null?null:n===1000);
    }
-   if(active(comp)&&active(coll)){
-    const rent=v.text.match(/^Rental\s+(?:reimbursement|coverage)[ \t:]*([^\n]*)/im)?.[1]?.trim();
-    const rate=rent?.match(/^\$\s*([\d,]+(?:\.\d+)?)(?=\s*(?:$|\/|per\b|a day\b|daily\b))/i);
-    add('Vehicle Coverage',v.name+' Rental Reimbursement','$30/day',rent||'Not listed',!!rate&&money(rate[1])===30);
+   if(b.carrier==='Farmers'&&active(comp)&&active(coll)){
+    const buyback=v.text.match(/^(?:Full\s+)?(?:Glass\s+)?Deductible[ \t]+Buy[ -]?Back(?:[ \t]+Coverage)?\b[ \t:]*(?:\n(?=[ \t]*(?:Included|Yes|Selected|No|Not|Declined|None|Excluded)\b))?[ \t]*([^\n]*)/im);
+    const value=buyback?.[1]?.trim();
+    const included=/^(?:Included|Yes|Selected)\b/i.test(value||'');
+    add('Vehicle Coverage',v.name+' Deductible Buyback','Included',value||(buyback?'Value unavailable':'Not listed'),buyback&&!value?null:included);
    }
    const um=[...v.text.matchAll(umpd)];
    const selected=um.find(m=>active(m[1].trim()));
