@@ -210,7 +210,7 @@ function analyze(raw,filename){
  const values=(b,pattern)=>pattern.exec(b.details.join('\n'))||pattern.exec(b.summary.join('\n'));
  const discountData=b=>{
   if(!b)return null;
-  for(const [list,rx] of [[b.details,/^Discounts\s*\/\s*Preferences\b/im],[b.summary,/^Applied discounts\s*$/im]]){
+  for(const [list,rx] of [[b.summary,/^Applied discounts\b[ \t]*:?/im],[b.details,/^Discounts\s*\/\s*Preferences\b/im]]){
    for(const p of list){const m=rx.exec(p);if(!m)continue;
     const body=p.slice(m.index+m[0].length).split(/(?:^Payment plans?\b|^Page \d+\b|^Quote #\b|^\*|^Prepared on\b)/im)[0].trim();
     if(body)return body;
@@ -278,7 +278,7 @@ function analyze(raw,filename){
   for(const [label,pattern] of [
    ['Paperless',/\b(?:Go\s+)?Paperless\b/i],
    ['Homeowner',/\bHome\s*owner\b/i],
-   ['Auto/Home or Condo',/\bAuto\s*\/\s*(?:(?:Farmers\s+)?Home|Condo)\b/i]
+   ['Home or Condo',/\b(?:Home\s+or\s+Condo|Auto\s*\/\s*(?:(?:Farmers\s+)?Home|Condo))\b/i]
   ]){
    const found=autoDiscounts==null?null:pattern.test(autoDiscounts);
    add('Auto Discounts',label,'Included',found==null?null:found?'Included':'Not listed',found);
